@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_tutorial/constants/routes.dart';
+import 'dart:developer' as devtools show log;
 import '../firebase_options.dart';
 
 class RegisterView extends StatefulWidget {
@@ -67,25 +68,30 @@ class _RegisterViewState extends State<RegisterView> {
                         final userCredential = await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                                 email: email, password: password);
-                        print(userCredential);
+                        devtools.log(userCredential.toString());
                       } on FirebaseAuthException catch (e) {
                         if (e.code == "user-not-found") {
-                          print("ERROR: User Not Found");
+                          devtools.log("ERROR: User Not Found");
                         } else if (e.code == "wrong-password") {
-                          print("ERROR: Wrong Password");
+                          devtools.log("ERROR: Wrong Password");
                         } else if (e.code == "email-already-in-use") {
-                          print("ERROR: Email already in use");
+                          devtools.log("ERROR: Email already in use");
                         } else if (e.code == "invalid-email") {
-                          print("ERROR: Invalid Email");
+                          devtools.log("ERROR: Invalid Email");
                         } else {
-                          print(e.code);
+                          devtools.log(e.code);
                         }
                       }
                     },
                     child: const Text("Register"),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        loginRoute,
+                        (route) => false,
+                      );
+                    },
                     child: const Text("You have an account? Login"),
                   ),
                 ],
