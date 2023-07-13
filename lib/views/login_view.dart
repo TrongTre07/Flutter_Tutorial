@@ -66,15 +66,23 @@ class _LoginViewState extends State<LoginView> {
                       final email = _email.text;
                       final password = _password.text;
                       try {
-                        final userCredential = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                                email: email, password: password);
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          notesRoute,
-                          (route) => false,
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: email,
+                          password: password,
                         );
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user?.emailVerified ?? false) {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            notesRoute,
+                            (route) => false,
+                          );
+                        } else {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            verifyEmailRoute,
+                            (route) => false,
+                          );
+                        }
                       } on FirebaseAuthException catch (e) {
-                        devtools.log(e.code);
                         if (e.code == "user-not-found") {
                           devtools.log("ERROR: User Not Found");
 
@@ -83,13 +91,11 @@ class _LoginViewState extends State<LoginView> {
                             'User Not Found',
                           );
                         } else if (e.code == "wrong-password") {
-                          devtools.log("ERROR: Wrong Password");
                           await showErrorDialog(
                             context,
                             'Wrong Credentials',
                           );
                         } else {
-                          devtools.log("ERROR: " + e.code);
                           await showErrorDialog(
                             context,
                             'Error: ${e.code}',
@@ -120,5 +126,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-
