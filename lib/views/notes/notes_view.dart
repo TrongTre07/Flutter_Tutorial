@@ -4,6 +4,7 @@ import 'package:flutter_tutorial/constants/routes.dart';
 import 'package:flutter_tutorial/enums/menu_action.dart';
 import 'package:flutter_tutorial/services/auth/auth_service.dart';
 import 'package:flutter_tutorial/services/crud/notes_service.dart';
+import 'package:flutter_tutorial/views/notes/new_note_view.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -33,8 +34,14 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Main UI here"),
+        title: const Text("Your Notes"),
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(newNoteRoute);
+            },
+            icon: const Icon(Icons.add),
+          ),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -69,6 +76,7 @@ class _NotesViewState extends State<NotesView> {
                 stream: _notesService.allNotes,
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
+                    case ConnectionState.active:
                     case ConnectionState.waiting:
                       return const Text("Waiting for all notes...");
                     default:
